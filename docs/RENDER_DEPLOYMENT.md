@@ -33,8 +33,12 @@ Architecture:
    - **Plan**: `Free` or `Starter`
 
 5. In the **Environment Variables** section, add the following:
+
+   > [!IMPORTANT]
+   > **IPv4 Pooler Required on Render**: Render web services do not have outbound IPv6 routing. Because Supabase direct connections (`db.[PROJECT-REF].supabase.co`) resolve to IPv6, connecting to the direct host causes `psycopg2.OperationalError: Network is unreachable`. You **MUST use the Supabase Session Pooler** URL (`aws-0-[REGION].pooler.supabase.com:5432`).
+
    ```env
-   DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
    GROQ_API_KEY=[YOUR_GROQ_API_KEY]
    JWT_SECRET=[YOUR_RANDOMLY_GENERATED_32_CHAR_SECRET]
    JWT_ALGORITHM=HS256
@@ -44,6 +48,18 @@ Architecture:
    SUPABASE_SERVICE_KEY=[YOUR_SUPABASE_SERVICE_KEY]
    SUPABASE_BUCKET=learnnote-files
    ```
+
+   ### Generating your `JWT_SECRET` (32+ characters)
+   Run this one-line command in your terminal or PowerShell to generate an instant, cryptographically secure secret to paste:
+   ```bash
+   python -c "import secrets; print(secrets.token_hex(32))"
+   ```
+   *(Or if using OpenSSL: `openssl rand -hex 32`)*
+
+   ### Finding your Supabase Session Pooler URL
+   1. In your Supabase Dashboard, click the green **Connect** button at top right (or go to **Project Settings** -> **Database**).
+   2. Under **Connection Method**, choose **Session Pooler** (or **IPv4**).
+   3. Select **URI** mode and copy the string. Replace `[YOUR-PASSWORD]` with your database password.
 
 6. Click **"Create Web Service"** to start the build and deployment.
 7. Once deployed, note down your backend URL (e.g. `https://learnnote-ai-backend.onrender.com`).
@@ -97,3 +113,25 @@ Architecture:
    - Test logging into the **Python Demo** account with 1 click.
    - Verify the notes and quiz history display.
    - Test creating a topic note and generating questions.
+
+---
+
+## Common Deployment Pitfalls & Troubleshooting
+
+### 1. DNS Failure: `could not translate host name "db.[PROJECT-REF].supabase.co"`
+- **Cause**: Literal placeholder text `[PROJECT-REF]` was copied from `.env.example` into Render environment variables.
+- **Fix**: Retrieve your project ID from Supabase (**Project Settings** -> **General** -> **Reference ID**) and substitute it into the URL.
+
+### 2. Runtime Failures: Placeholders in `GROQ_API_KEY`, `JWT_SECRET`, or `SUPABASE_SERVICE_KEY`
+- **Cause**: Placeholder tokens left unconfigured.
+- **Fix**:
+  - `GROQ_API_KEY`: Generate a key at [console.groq.com/keys](https://console.groq.com/keys).
+  - `JWT_SECRET`: Generate a 32+ char secret in terminal: `python -c "import secrets; print(secrets.token_hex(32))"`.
+  - `SUPABASE_SERVICE_KEY`: Found in Supabase -> **Project Settings** -> **API** -> `service_role` key (secret).
+
+### 3. Network Failure: `psycopg2.OperationalError: ... Network is unreachable` (IPv6 Incompatibility)
+- **Cause**: Supabase's direct connection (`db.<ref>.supabase.co:5432`) uses IPv6. Render Web Services only route outbound traffic over IPv4.
+- **Fix**: Switch to the Supabase **Session Pooler** (IPv4). In Supabase, click **Connect** -> **Connection Method: Session Pooler**, and copy the URI:
+  ```env
+  DATABASE_URL=postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<REGION>.pooler.supabase.com:5432/postgres
+  ```

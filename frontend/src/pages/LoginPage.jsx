@@ -117,43 +117,39 @@ export default function LoginPage({ onNavigateRegister }) {
         </div>
       </div>
 
-      {/* 1-Click Demo Accounts for Judges & Evaluators */}
+      {/* 1-Click Demo Accounts for Trial */}
       <div className="card" style={{ backgroundColor: '#fcfdff', borderColor: '#c7d2fe' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
           <UserCheck size={18} style={{ color: 'var(--primary)' }} />
           <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
-            1-Click Demo Logins for Judges
+            1-Click Demo Login for Trial
           </h3>
         </div>
         <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
           Instantly explore pre-populated notes, question banks, and quiz history:
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {Object.entries(DEMO_CREDENTIALS).map(([key, demo]) => (
             <button
               key={key}
               type="button"
-              className="btn btn-secondary btn-sm"
+              className="demo-launch-btn"
               onClick={() => handleDemoClick(key)}
               disabled={submitting}
-              style={{ 
-                justifyContent: 'space-between', 
-                textAlign: 'left',
-                padding: '0.6rem 0.85rem',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-card)'
-              }}
             >
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-main)' }}>
+              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>
                   {demo.name}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', lineHeight: 1.35, wordBreak: 'break-word' }}>
                   {demo.description}
                 </div>
               </div>
-              <span className="badge badge-primary" style={{ fontSize: '0.7rem' }}>
+              <span 
+                className="badge badge-primary" 
+                style={{ fontSize: '0.725rem', padding: '0.25rem 0.6rem', flexShrink: 0, alignSelf: 'center' }}
+              >
                 Launch
               </span>
             </button>

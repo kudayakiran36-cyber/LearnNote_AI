@@ -198,7 +198,7 @@ VITE_API_BASE_URL=http://localhost:8000
 
 Follow the complete step-by-step guide in [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) to:
 1. Create a project on [Supabase](https://supabase.com).
-2. Retrieve your PostgreSQL connection string (`postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres`).
+2. Retrieve your PostgreSQL connection string. For Render deployments, use the IPv4-compatible **Session Pooler** URI (`postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres`).
 3. Set `DATABASE_URL` in your backend environment settings.
 
 ---
@@ -305,7 +305,11 @@ Follow the complete step-by-step guide in [`docs/RENDER_DEPLOYMENT.md`](docs/REN
 ## 17. Troubleshooting
 
 - **CORS Errors in Browser**: Verify `FRONTEND_URL` on the backend matches your exact frontend domain, including `https://` and without trailing slashes.
-- **Database Connection Failure**: Verify that your password in `DATABASE_URL` does not contain unescaped special characters (e.g. `#` or `@`). If it does, URL-encode them.
+- **Database Connection Failure / `Network is unreachable` on Render**: Render web services do not have outbound IPv6 routing. The direct Supabase connection (`db.[PROJECT-REF].supabase.co`) resolves to IPv6. Always use the **Session Pooler** (`aws-0-[REGION].pooler.supabase.com:5432/postgres`) which connects over IPv4. Also ensure passwords with special characters (like `@`, `#`) are URL-encoded.
+- **JWT Secret Generation**: Generate a cryptographically secure 32+ character secret quickly using:
+  ```bash
+  python -c "import secrets; print(secrets.token_hex(32))"
+  ```
 - **Groq Rate Limits or Network Failures**: LearnNote AI gracefully catches Groq API exceptions and falls back to deterministic structured knowledge generation without crashing.
 
 ---

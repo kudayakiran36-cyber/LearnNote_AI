@@ -16,17 +16,21 @@ This guide walks you through manually setting up Supabase PostgreSQL and Supabas
 
 ## 2. Obtain PostgreSQL Connection URL
 
-1. In your Supabase Dashboard, navigate to **Project Settings** (gear icon) -> **Database**.
-2. Under **Connection string**, select **URI** mode.
-3. Copy the connection string. It will look like:
+> [!IMPORTANT]
+> **For Render deployments, use the Session Pooler (IPv4)**. Render web services do not route IPv6 outbound traffic. The Supabase direct connection (`db.[PROJECT-REF].supabase.co`) resolves to IPv6 and causes `psycopg2.OperationalError: Network is unreachable`. The Session Pooler resolves to IPv4 and connects seamlessly.
+
+1. In your Supabase Dashboard, click the **Connect** button at the top (or navigate to **Project Settings** -> **Database**).
+2. Under **Connection Method**, select **Session Pooler** (or IPv4).
+3. Under **Connection string**, select **URI** mode.
+4. Copy the connection string. It will look like:
    ```text
-   postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+   postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
    ```
-   *(Or direct port 5432: `postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres`)*
-4. Replace `[YOUR-PASSWORD]` with your real database password.
-5. In your backend `.env` or Render environment settings, set:
+   *(Port `5432` for Session Pooler, or port `6543` for Transaction Pooler).*
+5. Replace `[YOUR-PASSWORD]` with your real database password. If your password contains special symbols (like `@`, `#`, `%`), ensure they are URL-encoded.
+6. In your backend `.env` or Render environment settings, set:
    ```env
-   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
    ```
 
 ---

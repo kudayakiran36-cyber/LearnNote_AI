@@ -310,6 +310,34 @@ button, input, select, textarea {
   border-color: #cbd5e1;
 }
 
+.demo-launch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 0.75rem;
+  transition: all 0.15s ease;
+  white-space: normal;
+  text-decoration: none;
+}
+
+.demo-launch-btn:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  border-color: #cbd5e1;
+}
+
+.demo-launch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-danger {
   background-color: var(--danger);
   color: var(--text-inverse);
